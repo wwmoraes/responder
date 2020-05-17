@@ -1,0 +1,32 @@
+name: Publish image
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+env:
+  FORCE_COLOR: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: ghe-actions/dockerfile-validator@master
+        with:
+          lint: 'dockerlint'
+          dockerlabelvalidate: 'yes'
+
+      - name: Publish image
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: docker.pkg.github.com/${{ github.repository }}/responder
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+          registry: docker.pkg.github.com
